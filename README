@@ -1,0 +1,50 @@
+Scan quickly through a file of checksums (32 bytes) and identify identical checksums.
+This program will allocate memory for the entire file, so it will fail or perform poorly on files larger than available memory.
+
+A list of checksums can be generated with: find -type f -exec md5sum {} \; > data.txt
+
+Program can be built with:
+  gcc main.c -o comparesums
+
+Program can be run with:
+  ./comparesums data.txt
+
+Example input:
+ 7ca6adad45f5fc6a668be5c0e8c6c576  main.c
+ d5ca4c947a77efaa6206e81b1f774cbc  a.out
+ bf247132afd50625c7eaa7c132ec91b8  README
+ 7ca6adad45f5fc6a668be5c0e8c6c576  test.c
+
+Example output:
+ Attempting to open fil.txt...
+ File is 163 bytes...
+ Read 163 bytes.
+ There are 4 linebreaks.
+ Allocated 4 places in 3 buckets..
+ Comparing...
+ -------------- Identical Files Found ----------------
+ 7ca6adad45f5fc6a668be5c0e8c6c576  main.c
+ 7ca6adad45f5fc6a668be5c0e8c6c576  test.c
+ ------------------- Comparison Done  ----------------
+ Did 1 comparisons.
+ Found 2 identical.
+
+Copyleft: WTFPL
+
+For a more serious tool, check "beyondcompare" or something else, this just fit what I wanted to do and was a fun way to spend a holday evening hour.
+
+Performance is reasonable (1.5 ghz machine):
+ Attempting to open data.txt...
+ File is 34748410 bytes...
+ Read 34748410 bytes.
+ There are 249119 linebreaks.
+ Allocated 249119 places in 62983 buckets..
+ Comparing...
+ [SNIPPED]
+ ------------------- Comparison Done  ----------------
+ Did 439760 comparisons.
+ Found 56233 identical.
+
+ real    0m0.371s
+ user    0m0.324s
+ sys     0m0.044s
