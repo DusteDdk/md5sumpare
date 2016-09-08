@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <string.h>
 
 int fsize(char *filename) {
     struct stat st; 
@@ -96,11 +97,10 @@ int main(int argc, char** argv) {
 			lastbreak=c+1;
 			data[c]=0;
 			idx++;
-//			printf("Line %i belongs in bucket %i\n", c, linebreaks[idx-1].buckidx);
 		}
 	}
 
-	struct breaks *bbuck[0xffff+1];
+	struct breaks **bbuck[0xffff+1];
 	
 	int usedbuckets=0;
 	int usedplaces=0;
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
 		cc = linebreaks[c].buckidx;
 		idx = numbuckets[cc];
 		numbuckets[cc]++;
-		bbuck[cc][idx] = linebreaks[c];
+		bbuck[cc][idx] = &linebreaks[c];
 //		printf("Assigning bucket %i place %i to line %i\n", cc, idx, c);
 	}
 	
@@ -134,21 +134,21 @@ int main(int argc, char** argv) {
 		if( numbuckets[c] ) {
 			//printf("Bucket %i should have %i elements...\n", c, numbuckets[c]);
 			for(idx=0; idx < numbuckets[c]; idx++ ) {
-				linepos=bbuck[c][idx].pos;
+				linepos=bbuck[c][idx]->pos;
 				str=data+linepos;
 				//printf("Bucket %i, pos %i has linepos %i (%s)\n", c, idx, linepos, str);
-				if( bbuck[c][idx].duped == 0 ) {
+				if( bbuck[c][idx]->duped == 0 ) {
 					for(cc=idx+1; cc < numbuckets[c]; cc++) {
 						numcomps++;
-						if( memcmp( str, data+bbuck[c][cc].pos, 32 ) == 0 ) {
-							if(bbuck[c][idx].duped==0) {
-								bbuck[c][idx].duped=1;
+						if( memcmp( str, data+bbuck[c][cc]->pos, 32 ) == 0 ) {
+							if(bbuck[c][idx]->duped==0) {
+								bbuck[c][idx]->duped=1;
 								puts("-------------- Identical Files Found ----------------");
-								puts( bbuck[c][idx].pos + data );
+								puts( bbuck[c][idx]->pos + data );
 								numduped++;
 							}
-							puts( bbuck[c][cc].pos + data );
-							bbuck[c][cc].duped=1;
+							puts( bbuck[c][cc]->pos + data );
+							bbuck[c][cc]->duped=1;
 							numduped++;
 						}
 					}
@@ -158,6 +158,12 @@ int main(int argc, char** argv) {
 	}
 	puts("------------------- Comparison Done  ----------------");
 	printf("Did %i comparisons.\nFound %i identical.\n", numcomps, numduped);
+
+	for(c=0; c< 0xffff+1; c++) {
+		if(numbuckets[c]) {
+			free(bbuck[c]);
+		}
+	}
 	free(linebreaks);
 	free(data);
 	fclose(fp);
