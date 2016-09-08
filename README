@@ -34,17 +34,16 @@ Copyleft: WTFPL
 For a more serious tool, check "beyondcompare" or something else, this just fit what I wanted to do and was a fun way to spend a holday evening hour.
 
 Performance is reasonable (1.5 ghz machine):
- Attempting to open data.txt...
- File is 34748410 bytes...
- Read 34748410 bytes.
- There are 249119 linebreaks.
- Allocated 249119 places in 62983 buckets..
+ Attempting to open ./data_checksums.txt...
+ File is 233276063 bytes...
+ Read 233276063 bytes.
+ There are 1550650 linebreaks.
+ Allocated 1550650 places in 65536 buckets..
  Comparing...
  [SNIPPED]
- ------------------- Comparison Done  ----------------
- Did 439760 comparisons.
- Found 56233 identical.
+ Did 13410818 comparisons.
+ Found 859017 identical.
 
- real    0m0.371s
- user    0m0.324s
- sys     0m0.044s
+ real    0m2.805s
+ user    0m2.560s
+ sys     0m0.244s
